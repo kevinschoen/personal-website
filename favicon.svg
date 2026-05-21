@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Kevin Schoen">
+  <rect width="32" height="32" fill="#0d1117"/>
+  <text
+    x="16"
+    y="23"
+    text-anchor="middle"
+    font-family="system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif"
+    font-size="20"
+    font-weight="700"
+    fill="#818cf8"
+  >K</text>
+</svg>
