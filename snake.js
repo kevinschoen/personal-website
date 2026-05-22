@@ -16,7 +16,7 @@
     grid: '#334155',
     snake: '#818cf8',
     snakeHead: '#a5b4fc',
-    food: '#f472b6',
+    food: '#94a3b8',
     text: '#64748b',
   };
 

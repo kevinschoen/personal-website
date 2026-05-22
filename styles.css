@@ -10,6 +10,7 @@
   --color-surface-hover: #1e1b4b;
   --color-border: #334155;
   --color-border-accent: #4f46e5;
+  --content-width: 640px;
 }
 
 *, *::before, *::after {
@@ -58,7 +59,7 @@ h1 {
   font-size: 1.0625rem;
   line-height: 1.75;
   color: var(--color-text-muted);
-  max-width: 640px;
+  max-width: var(--content-width);
 }
 
 /* Sections */
@@ -174,6 +175,8 @@ a.contact-item:hover .icon-wrap {
   flex-direction: column;
   align-items: flex-start;
   gap: 12px;
+  width: 100%;
+  max-width: var(--content-width);
 }
 
 .snake-hud {
@@ -195,11 +198,10 @@ a.contact-item:hover .icon-wrap {
 
 #snake-canvas {
   display: block;
+  width: 100%;
   border: 1px solid var(--color-border);
   border-radius: 12px;
   background-color: var(--color-surface);
-  max-width: 100%;
-  height: auto;
 }
 
 .snake-hint {
