@@ -9,6 +9,7 @@
   const COLS = canvas.width / CELL;
   const ROWS = canvas.height / CELL;
   const TICK_MS = 120;
+  const FOOD_COUNT = 3;
 
   const COLORS = {
     bg: '#1e293b',
@@ -19,7 +20,7 @@
     text: '#64748b',
   };
 
-  let snake, direction, nextDirection, food, score, intervalId, running, gameOver;
+  let snake, direction, nextDirection, foods, score, intervalId, running, gameOver;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -34,19 +35,29 @@
     score = 0;
     scoreEl.textContent = '0';
     gameOver = false;
-    placeFood();
+    foods = [];
+    while (foods.length < FOOD_COUNT) addFood();
     draw();
   }
 
-  function placeFood() {
+  function isOccupied(x, y) {
+    return (
+      snake.some((s) => s.x === x && s.y === y) ||
+      foods.some((f) => f.x === x && f.y === y)
+    );
+  }
+
+  function addFood() {
     let spot;
+    let attempts = 0;
     do {
       spot = {
         x: Math.floor(Math.random() * COLS),
         y: Math.floor(Math.random() * ROWS),
       };
-    } while (snake.some((s) => s.x === spot.x && s.y === spot.y));
-    food = spot;
+      attempts += 1;
+    } while (isOccupied(spot.x, spot.y) && attempts < 500);
+    if (!isOccupied(spot.x, spot.y)) foods.push(spot);
   }
 
   function start() {
@@ -85,10 +96,12 @@
 
     snake.unshift(head);
 
-    if (head.x === food.x && head.y === food.y) {
+    const eatenIndex = foods.findIndex((f) => f.x === head.x && f.y === head.y);
+    if (eatenIndex !== -1) {
       score += 1;
       scoreEl.textContent = String(score);
-      placeFood();
+      foods.splice(eatenIndex, 1);
+      addFood();
     } else {
       snake.pop();
     }
@@ -116,15 +129,17 @@
     }
 
     ctx.fillStyle = COLORS.food;
-    ctx.beginPath();
-    ctx.arc(
-      food.x * CELL + CELL / 2,
-      food.y * CELL + CELL / 2,
-      CELL / 2 - 2,
-      0,
-      Math.PI * 2
-    );
-    ctx.fill();
+    foods.forEach((f) => {
+      ctx.beginPath();
+      ctx.arc(
+        f.x * CELL + CELL / 2,
+        f.y * CELL + CELL / 2,
+        CELL / 2 - 2,
+        0,
+        Math.PI * 2
+      );
+      ctx.fill();
+    });
 
     snake.forEach((segment, i) => {
       ctx.fillStyle = i === 0 ? COLORS.snakeHead : COLORS.snake;
