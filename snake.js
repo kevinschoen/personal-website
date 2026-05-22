@@ -78,15 +78,9 @@
   function tick() {
     direction = nextDirection;
     const head = {
-      x: snake[0].x + direction.x,
-      y: snake[0].y + direction.y,
+      x: (snake[0].x + direction.x + COLS) % COLS,
+      y: (snake[0].y + direction.y + ROWS) % ROWS,
     };
-
-    if (head.x < 0 || head.x >= COLS || head.y < 0 || head.y >= ROWS) {
-      stop('Game over — press Space to restart');
-      draw();
-      return;
-    }
 
     if (snake.some((s) => s.x === head.x && s.y === head.y)) {
       stop('Game over — press Space to restart');
