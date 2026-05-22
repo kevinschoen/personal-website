@@ -54,6 +54,7 @@ h1 {
 }
 
 .bio {
+  margin-top: 32px;
   font-size: 1.0625rem;
   line-height: 1.75;
   color: var(--color-text-muted);
