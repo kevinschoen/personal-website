@@ -1,8 +1,6 @@
 (function () {
   const canvas = document.getElementById('snake-canvas');
-  const scoreEl = document.getElementById('snake-score');
-  const statusEl = document.getElementById('snake-status');
-  if (!canvas || !scoreEl || !statusEl) return;
+  if (!canvas) return;
 
   const ctx = canvas.getContext('2d');
   const CELL = 20;
@@ -20,7 +18,7 @@
     text: '#64748b',
   };
 
-  let snake, direction, nextDirection, foods, score, intervalId, running, gameOver;
+  let snake, direction, nextDirection, foods, intervalId, running, gameOver;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -32,8 +30,6 @@
     ];
     direction = { x: 1, y: 0 };
     nextDirection = { x: 1, y: 0 };
-    score = 0;
-    scoreEl.textContent = '0';
     gameOver = false;
     foods = [];
     while (foods.length < FOOD_COUNT) addFood();
@@ -64,15 +60,13 @@
     if (running) return;
     if (gameOver) reset();
     running = true;
-    statusEl.textContent = '';
     intervalId = setInterval(tick, TICK_MS);
   }
 
-  function stop(message) {
+  function stop() {
     running = false;
     clearInterval(intervalId);
     gameOver = true;
-    statusEl.textContent = message;
   }
 
   function tick() {
@@ -83,7 +77,7 @@
     };
 
     if (snake.some((s) => s.x === head.x && s.y === head.y)) {
-      stop('Game over — press Space to restart');
+      stop();
       draw();
       return;
     }
@@ -92,8 +86,6 @@
 
     const eatenIndex = foods.findIndex((f) => f.x === head.x && f.y === head.y);
     if (eatenIndex !== -1) {
-      score += 1;
-      scoreEl.textContent = String(score);
       foods.splice(eatenIndex, 1);
       addFood();
     } else {

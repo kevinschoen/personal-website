@@ -179,23 +179,6 @@ a.contact-item:hover .icon-wrap {
   max-width: var(--content-width);
 }
 
-.snake-hud {
-  display: flex;
-  align-items: baseline;
-  gap: 24px;
-  font-size: 0.9375rem;
-}
-
-.snake-score {
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.snake-status {
-  color: var(--color-text-subtle);
-  font-size: 0.875rem;
-}
-
 #snake-canvas {
   display: block;
   width: 100%;
