@@ -19,6 +19,10 @@
   };
 
   let snake, direction, nextDirection, foods, score, intervalId, running, gameOver, hasInput;
+  // Guess touch vs. keyboard from media query, then keep it accurate based on actual input events.
+  let usingTouch =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -136,7 +140,8 @@
       ctx.fillStyle = COLORS.text;
       ctx.font = '500 14px Inter, sans-serif';
       ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 2);
-      ctx.fillText('Press Space To Restart', canvas.width / 2, canvas.height / 2 + 24);
+      const restartText = usingTouch ? 'Tap To Restart' : 'Press Space To Restart';
+      ctx.fillText(restartText, canvas.width / 2, canvas.height / 2 + 24);
     }
   }
 
@@ -164,7 +169,9 @@
     const key = e.key;
     if (key === ' ' || key === 'Spacebar') {
       e.preventDefault();
+      usingTouch = false;
       restartOrStart();
+      if (gameOver) draw();
       return;
     }
 
@@ -179,6 +186,7 @@
     const dir = map[key];
     if (dir) {
       e.preventDefault();
+      usingTouch = false;
       noteFirstInput();
       setDirection(dir[0], dir[1]);
     }
@@ -191,6 +199,8 @@
   canvas.addEventListener('touchstart', (e) => {
     if (e.touches.length !== 1) return;
     e.preventDefault();
+    usingTouch = true;
+    if (gameOver) draw();
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
   }, { passive: false });
