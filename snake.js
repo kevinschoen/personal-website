@@ -145,14 +145,26 @@
     nextDirection = { x, y };
   }
 
+  function noteFirstInput() {
+    if (hasInput) return;
+    hasInput = true;
+    if (running) {
+      clearInterval(intervalId);
+      intervalId = setInterval(tick, TICK_MS);
+    }
+  }
+
+  function restartOrStart() {
+    if (running) return;
+    if (gameOver) reset();
+    start();
+  }
+
   document.addEventListener('keydown', (e) => {
     const key = e.key;
     if (key === ' ' || key === 'Spacebar') {
       e.preventDefault();
-      if (!running) {
-        if (gameOver) reset();
-        start();
-      }
+      restartOrStart();
       return;
     }
 
@@ -167,16 +179,46 @@
     const dir = map[key];
     if (dir) {
       e.preventDefault();
-      if (!hasInput) {
-        hasInput = true;
-        if (running) {
-          clearInterval(intervalId);
-          intervalId = setInterval(tick, TICK_MS);
-        }
-      }
+      noteFirstInput();
       setDirection(dir[0], dir[1]);
     }
   });
+
+  const SWIPE_THRESHOLD = 20;
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', (e) => {
+    if (e.changedTouches.length !== 1) return;
+    e.preventDefault();
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    if (absDx < SWIPE_THRESHOLD && absDy < SWIPE_THRESHOLD) {
+      restartOrStart();
+      return;
+    }
+
+    if (!running) return;
+
+    const dirX = absDx > absDy ? (dx > 0 ? 1 : -1) : 0;
+    const dirY = absDx > absDy ? 0 : (dy > 0 ? 1 : -1);
+    noteFirstInput();
+    setDirection(dirX, dirY);
+  }, { passive: false });
 
   reset();
   start();
