@@ -18,7 +18,7 @@
     text: '#64748b',
   };
 
-  let snake, direction, nextDirection, foods, intervalId, running, gameOver, hasInput;
+  let snake, direction, nextDirection, foods, score, intervalId, running, gameOver, hasInput;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -32,6 +32,7 @@
     nextDirection = { x: 1, y: 0 };
     gameOver = false;
     hasInput = false;
+    score = 0;
     foods = [];
     while (foods.length < FOOD_COUNT) addFood();
     draw();
@@ -87,6 +88,7 @@
 
     const eatenIndex = foods.findIndex((f) => f.x === head.x && f.y === head.y);
     if (eatenIndex !== -1) {
+      score += 1;
       foods.splice(eatenIndex, 1);
       addFood();
     } else {
@@ -130,10 +132,11 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = COLORS.snakeHead;
       ctx.font = '600 24px Inter, sans-serif';
-      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 8);
+      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 24);
       ctx.fillStyle = COLORS.text;
       ctx.font = '500 14px Inter, sans-serif';
-      ctx.fillText('Press Space To Restart', canvas.width / 2, canvas.height / 2 + 20);
+      ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 2);
+      ctx.fillText('Press Space To Restart', canvas.width / 2, canvas.height / 2 + 24);
     }
   }
 
