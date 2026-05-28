@@ -41,7 +41,7 @@
         </li>
       </ul>
       <p class="bio">
-        Experienced software engineer and technical lead with 15+ years building and scaling
+        Experienced software engineer and technical lead with over 15 years of experience building and scaling
         backend platforms, APIs, and distributed systems at enterprise and consumer scale. I enjoy
         breaking down complex problems and designing systems that are intuitive to use, fast,
         reliable, and easy to operate. 
@@ -81,6 +81,19 @@
       </div>
     </section>
 
+    <section class="snake-section">
+      <p class="section-label">Snake</p>
+      <div class="snake-game">
+        <div class="snake-hud">
+          <span class="snake-score">Score: <span id="snake-score">0</span></span>
+          <span class="snake-status" id="snake-status">Press Space to start</span>
+        </div>
+        <canvas id="snake-canvas" width="640" height="640" aria-label="Snake game board"></canvas>
+        <p class="snake-hint">Arrow keys to move · Space to start or restart</p>
+      </div>
+    </section>
+
   </div>
+  <script src="snake.js"></script>
 </body>
 </html>
