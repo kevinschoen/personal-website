@@ -179,34 +179,10 @@ a.contact-item:hover .icon-wrap {
   max-width: var(--content-width);
 }
 
-.snake-hud {
-  display: flex;
-  align-items: baseline;
-  gap: 24px;
-  font-size: 0.9375rem;
-}
-
-.snake-score {
-  font-weight: 500;
-  color: var(--color-text);
-}
-
-.snake-status {
-  color: var(--color-text-subtle);
-  font-size: 0.875rem;
-}
-
 #snake-canvas {
   display: block;
   width: 100%;
-  border: 1px solid var(--color-border);
-  border-radius: 12px;
-  background-color: var(--color-surface);
-}
-
-.snake-hint {
-  font-size: 0.8125rem;
-  color: var(--color-text-subtle);
+  background-color: var(--color-bg);
 }
 
 @media (max-width: 480px) {

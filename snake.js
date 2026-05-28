@@ -1,26 +1,24 @@
 (function () {
   const canvas = document.getElementById('snake-canvas');
-  const scoreEl = document.getElementById('snake-score');
-  const statusEl = document.getElementById('snake-status');
-  if (!canvas || !scoreEl || !statusEl) return;
+  if (!canvas) return;
 
   const ctx = canvas.getContext('2d');
   const CELL = 20;
   const COLS = canvas.width / CELL;
   const ROWS = canvas.height / CELL;
   const TICK_MS = 120;
+  const SLOW_TICK_MS = TICK_MS * 2;
   const FOOD_COUNT = 3;
 
   const COLORS = {
-    bg: '#1e293b',
-    grid: '#334155',
+    bg: '#0d1117',
     snake: '#818cf8',
     snakeHead: '#a5b4fc',
     food: '#94a3b8',
     text: '#64748b',
   };
 
-  let snake, direction, nextDirection, foods, score, intervalId, running, gameOver;
+  let snake, direction, nextDirection, foods, intervalId, running, gameOver, hasInput;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -32,9 +30,8 @@
     ];
     direction = { x: 1, y: 0 };
     nextDirection = { x: 1, y: 0 };
-    score = 0;
-    scoreEl.textContent = '0';
     gameOver = false;
+    hasInput = false;
     foods = [];
     while (foods.length < FOOD_COUNT) addFood();
     draw();
@@ -64,15 +61,13 @@
     if (running) return;
     if (gameOver) reset();
     running = true;
-    statusEl.textContent = '';
-    intervalId = setInterval(tick, TICK_MS);
+    intervalId = setInterval(tick, hasInput ? TICK_MS : SLOW_TICK_MS);
   }
 
-  function stop(message) {
+  function stop() {
     running = false;
     clearInterval(intervalId);
     gameOver = true;
-    statusEl.textContent = message;
   }
 
   function tick() {
@@ -83,7 +78,7 @@
     };
 
     if (snake.some((s) => s.x === head.x && s.y === head.y)) {
-      stop('Game over — press Space to restart');
+      stop();
       draw();
       return;
     }
@@ -92,8 +87,6 @@
 
     const eatenIndex = foods.findIndex((f) => f.x === head.x && f.y === head.y);
     if (eatenIndex !== -1) {
-      score += 1;
-      scoreEl.textContent = String(score);
       foods.splice(eatenIndex, 1);
       addFood();
     } else {
@@ -106,21 +99,6 @@
   function draw() {
     ctx.fillStyle = COLORS.bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = COLORS.grid;
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x <= COLS; x++) {
-      ctx.beginPath();
-      ctx.moveTo(x * CELL, 0);
-      ctx.lineTo(x * CELL, canvas.height);
-      ctx.stroke();
-    }
-    for (let y = 0; y <= ROWS; y++) {
-      ctx.beginPath();
-      ctx.moveTo(0, y * CELL);
-      ctx.lineTo(canvas.width, y * CELL);
-      ctx.stroke();
-    }
 
     ctx.fillStyle = COLORS.food;
     foods.forEach((f) => {
@@ -149,10 +127,13 @@
     if (gameOver) {
       ctx.fillStyle = 'rgba(13, 17, 23, 0.75)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = COLORS.snakeHead;
+      ctx.font = '600 24px Inter, sans-serif';
+      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 8);
       ctx.fillStyle = COLORS.text;
       ctx.font = '500 14px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+      ctx.fillText('Press Space To Restart', canvas.width / 2, canvas.height / 2 + 20);
     }
   }
 
@@ -183,9 +164,17 @@
     const dir = map[key];
     if (dir) {
       e.preventDefault();
+      if (!hasInput) {
+        hasInput = true;
+        if (running) {
+          clearInterval(intervalId);
+          intervalId = setInterval(tick, TICK_MS);
+        }
+      }
       setDirection(dir[0], dir[1]);
     }
   });
 
   reset();
+  start();
 })();
