@@ -7,6 +7,7 @@
   const COLS = canvas.width / CELL;
   const ROWS = canvas.height / CELL;
   const TICK_MS = 120;
+  const SLOW_TICK_MS = TICK_MS * 2;
   const FOOD_COUNT = 3;
 
   const COLORS = {
@@ -17,7 +18,7 @@
     text: '#64748b',
   };
 
-  let snake, direction, nextDirection, foods, intervalId, running, gameOver;
+  let snake, direction, nextDirection, foods, intervalId, running, gameOver, hasInput;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -30,6 +31,7 @@
     direction = { x: 1, y: 0 };
     nextDirection = { x: 1, y: 0 };
     gameOver = false;
+    hasInput = false;
     foods = [];
     while (foods.length < FOOD_COUNT) addFood();
     draw();
@@ -59,7 +61,7 @@
     if (running) return;
     if (gameOver) reset();
     running = true;
-    intervalId = setInterval(tick, TICK_MS);
+    intervalId = setInterval(tick, hasInput ? TICK_MS : SLOW_TICK_MS);
   }
 
   function stop() {
@@ -162,6 +164,13 @@
     const dir = map[key];
     if (dir) {
       e.preventDefault();
+      if (!hasInput) {
+        hasInput = true;
+        if (running) {
+          clearInterval(intervalId);
+          intervalId = setInterval(tick, TICK_MS);
+        }
+      }
       setDirection(dir[0], dir[1]);
     }
   });
