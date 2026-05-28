@@ -185,11 +185,6 @@ a.contact-item:hover .icon-wrap {
   background-color: var(--color-bg);
 }
 
-.snake-hint {
-  font-size: 0.8125rem;
-  color: var(--color-text-subtle);
-}
-
 @media (max-width: 480px) {
   h1 {
     font-size: 2.25rem;
