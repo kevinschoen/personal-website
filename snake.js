@@ -18,7 +18,11 @@
     text: '#64748b',
   };
 
-  let snake, direction, nextDirection, foods, intervalId, running, gameOver, hasInput;
+  let snake, direction, nextDirection, foods, score, intervalId, running, gameOver, hasInput;
+  // Guess touch vs. keyboard from media query, then keep it accurate based on actual input events.
+  let usingTouch =
+    typeof window.matchMedia === 'function' &&
+    window.matchMedia('(hover: none) and (pointer: coarse)').matches;
 
   function reset() {
     const midX = Math.floor(COLS / 2);
@@ -32,6 +36,7 @@
     nextDirection = { x: 1, y: 0 };
     gameOver = false;
     hasInput = false;
+    score = 0;
     foods = [];
     while (foods.length < FOOD_COUNT) addFood();
     draw();
@@ -87,6 +92,7 @@
 
     const eatenIndex = foods.findIndex((f) => f.x === head.x && f.y === head.y);
     if (eatenIndex !== -1) {
+      score += 1;
       foods.splice(eatenIndex, 1);
       addFood();
     } else {
@@ -130,10 +136,12 @@
       ctx.textAlign = 'center';
       ctx.fillStyle = COLORS.snakeHead;
       ctx.font = '600 24px Inter, sans-serif';
-      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 8);
+      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 24);
       ctx.fillStyle = COLORS.text;
       ctx.font = '500 14px Inter, sans-serif';
-      ctx.fillText('Press Space To Restart', canvas.width / 2, canvas.height / 2 + 20);
+      ctx.fillText('Score: ' + score, canvas.width / 2, canvas.height / 2 + 2);
+      const restartText = usingTouch ? 'Tap To Restart' : 'Press Space To Restart';
+      ctx.fillText(restartText, canvas.width / 2, canvas.height / 2 + 24);
     }
   }
 
@@ -142,14 +150,28 @@
     nextDirection = { x, y };
   }
 
+  function noteFirstInput() {
+    if (hasInput) return;
+    hasInput = true;
+    if (running) {
+      clearInterval(intervalId);
+      intervalId = setInterval(tick, TICK_MS);
+    }
+  }
+
+  function restartOrStart() {
+    if (running) return;
+    if (gameOver) reset();
+    start();
+  }
+
   document.addEventListener('keydown', (e) => {
     const key = e.key;
     if (key === ' ' || key === 'Spacebar') {
       e.preventDefault();
-      if (!running) {
-        if (gameOver) reset();
-        start();
-      }
+      usingTouch = false;
+      restartOrStart();
+      if (gameOver) draw();
       return;
     }
 
@@ -164,16 +186,49 @@
     const dir = map[key];
     if (dir) {
       e.preventDefault();
-      if (!hasInput) {
-        hasInput = true;
-        if (running) {
-          clearInterval(intervalId);
-          intervalId = setInterval(tick, TICK_MS);
-        }
-      }
+      usingTouch = false;
+      noteFirstInput();
       setDirection(dir[0], dir[1]);
     }
   });
+
+  const SWIPE_THRESHOLD = 20;
+  let touchStartX = 0;
+  let touchStartY = 0;
+
+  canvas.addEventListener('touchstart', (e) => {
+    if (e.touches.length !== 1) return;
+    e.preventDefault();
+    usingTouch = true;
+    if (gameOver) draw();
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: false });
+
+  canvas.addEventListener('touchmove', (e) => {
+    e.preventDefault();
+  }, { passive: false });
+
+  canvas.addEventListener('touchend', (e) => {
+    if (e.changedTouches.length !== 1) return;
+    e.preventDefault();
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    const absDx = Math.abs(dx);
+    const absDy = Math.abs(dy);
+
+    if (absDx < SWIPE_THRESHOLD && absDy < SWIPE_THRESHOLD) {
+      restartOrStart();
+      return;
+    }
+
+    if (!running) return;
+
+    const dirX = absDx > absDy ? (dx > 0 ? 1 : -1) : 0;
+    const dirY = absDx > absDy ? 0 : (dy > 0 ? 1 : -1);
+    noteFirstInput();
+    setDirection(dirX, dirY);
+  }, { passive: false });
 
   reset();
   start();

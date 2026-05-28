@@ -183,6 +183,7 @@ a.contact-item:hover .icon-wrap {
   display: block;
   width: 100%;
   background-color: var(--color-bg);
+  touch-action: none;
 }
 
 @media (max-width: 480px) {
