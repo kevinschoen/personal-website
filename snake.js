@@ -10,8 +10,7 @@
   const FOOD_COUNT = 3;
 
   const COLORS = {
-    bg: '#1e293b',
-    grid: '#334155',
+    bg: '#0d1117',
     snake: '#818cf8',
     snakeHead: '#a5b4fc',
     food: '#94a3b8',
@@ -98,21 +97,6 @@
   function draw() {
     ctx.fillStyle = COLORS.bg;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    ctx.strokeStyle = COLORS.grid;
-    ctx.lineWidth = 0.5;
-    for (let x = 0; x <= COLS; x++) {
-      ctx.beginPath();
-      ctx.moveTo(x * CELL, 0);
-      ctx.lineTo(x * CELL, canvas.height);
-      ctx.stroke();
-    }
-    for (let y = 0; y <= ROWS; y++) {
-      ctx.beginPath();
-      ctx.moveTo(0, y * CELL);
-      ctx.lineTo(canvas.width, y * CELL);
-      ctx.stroke();
-    }
 
     ctx.fillStyle = COLORS.food;
     foods.forEach((f) => {
