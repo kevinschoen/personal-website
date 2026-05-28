@@ -125,10 +125,13 @@
     if (gameOver) {
       ctx.fillStyle = 'rgba(13, 17, 23, 0.75)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.textAlign = 'center';
+      ctx.fillStyle = COLORS.snakeHead;
+      ctx.font = '600 24px Inter, sans-serif';
+      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2 - 8);
       ctx.fillStyle = COLORS.text;
       ctx.font = '500 14px Inter, sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('Game Over', canvas.width / 2, canvas.height / 2);
+      ctx.fillText('Press Space To Restart', canvas.width / 2, canvas.height / 2 + 20);
     }
   }
 
